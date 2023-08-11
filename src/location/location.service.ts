@@ -10,6 +10,10 @@ export class LocationService {
         private locationRepository: LocationRepository,
     ) {}
 
+    async getAllLocation(): Promise<Location[]> {
+        return await this.locationRepository.find();
+    }
+
     async getLocationById(site_id: number): Promise<Location> {
         const found = await this.locationRepository.findOne({where: {site_id}});
     
