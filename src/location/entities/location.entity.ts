@@ -5,21 +5,21 @@ export class Location extends BaseEntity {
     @PrimaryGeneratedColumn()
     site_id: number;
 
-    @Column()
+    @Column('int')
     character_id: number;
 
-    @Column()
+    @Column('varchar', { length: 255 })
     site_name: string;
 
-    @Column()
+    @Column('varchar', { length: 255 })
     site_link: string;
 
-    @Column()
+    @Column('text')
     site_description: string;
 
-    @Column()
+    @Column('decimal', { precision: 9, scale: 6 })
     longitude: number;
 
-    @Column()
+    @Column('decimal', { precision: 9, scale: 6 })
     latitude: number;
 }
