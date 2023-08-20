@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { DataSource, Repository } from "typeorm";
 import { Visit } from "../entities/visit.entity";
 import { CertVisitDto } from "../dto/cert-visit.dto";
-import { JwtPayload } from "jwt-decode";
 
 @Injectable()
 export class VisitRepository extends Repository<Visit> {
