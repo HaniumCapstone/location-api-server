@@ -15,4 +15,9 @@ export class LocationController {
     getLocationById(@Param('id') id: number): Promise<Location> {
         return this.locationService.getLocationById(id);
     }
+
+    @Get('/character/:id')
+    getLocationByCharacter(@Param('id') id: number): Promise<Location[]> {
+        return this.locationService.getLocationByCharacter(id);
+    }
 }

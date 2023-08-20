@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LocationRepository } from './repository/location.repository';
 import { Location } from './entities/location.entity';
+import { AuthVisitDto } from './dto/auth-visit.dto';
 
 @Injectable()
 export class LocationService {
@@ -22,5 +23,9 @@ export class LocationService {
         }
             
         return found;
+    }
+
+    async getLocationByCharacter(character_id: number): Promise<Location[]> {
+        return await this.locationRepository.find({where: {character_id}});
     }
 }
