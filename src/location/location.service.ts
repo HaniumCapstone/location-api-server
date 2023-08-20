@@ -77,4 +77,13 @@ export class LocationService {
         return this.visitRepository.certVisit(uid, certVisitDto);
     }
 
+    async getVisit(accessToken: string): Promise<Visit[]> {
+        const token = accessToken.replace("Bearer ", "");
+        const decoded = this.jwtService.decode(token);
+
+        const uid = Number(decoded['uid']);
+
+        return await this.visitRepository.find({where: {uid}});
+    }
+
 }

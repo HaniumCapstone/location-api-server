@@ -13,10 +13,7 @@ export class LocationController {
         return this.locationService.getAllLocation();
     }
 
-    @Get('/:id')
-    getLocationById(@Param('id') id: number): Promise<Location> {
-        return this.locationService.getLocationById(id);
-    }
+
 
     @Get('/character/:id')
     getLocationByCharacter(@Param('id') id: number): Promise<Location[]> {
@@ -29,5 +26,18 @@ export class LocationController {
         
         return this.locationService.certVisit(authorization, certVisitDto);
     }
+
+    @Get('/visit')
+    getVisit(@Req() req: Request): Promise<Visit[]> {
+        const authorization = req.headers['authorization'];
+
+        return this.locationService.getVisit(authorization);
+    }
+
+    @Get('/:id')
+    getLocationById(@Param('id') id: number): Promise<Location> {
+        return this.locationService.getLocationById(id);
+    }
+
 }
 
