@@ -6,9 +6,9 @@ import { Location } from './entities/location.entity';
 import { LocationRepository } from './repository/location.repository';
 
 @Module({
-  // imports: [
-  //   TypeOrmModule.forFeature([LocationRepository])
-  // ],
+  imports: [
+    TypeOrmModule.forFeature([Location])
+  ],
   controllers: [LocationController],
   providers: [
     LocationService,
