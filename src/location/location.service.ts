@@ -44,17 +44,13 @@ export class LocationService {
         const uid = Number(decoded['uid']);
 
         // 거리 계산
-        const site_id: number = certVisitDto['site_id'];
+        const {site_id, user_lon, user_lat} = certVisitDto;
         const location = await this.locationRepository.findOne({where: {site_id}});
+        const {longitude, latitude} = location; 
 
-        const location_lon: number = location['longitude'];
-        const location_lat: number = location['latitude'];
-        const user_lon: number = certVisitDto['user_lon'];
-        const user_lat: number = certVisitDto['user_lat'];
-
-        const location_rad_lat: number = Math.PI * location_lat / 180;
+        const location_rad_lat: number = Math.PI * latitude / 180;
         const user_rad_lat: number = Math.PI * user_lat / 180;
-        const theta: number = location_lon - user_lon;
+        const theta: number = longitude - user_lon;
         const rad_theta: number = Math.PI * theta / 180;
         let dist: number = Math.sin(location_rad_lat) * Math.sin(user_rad_lat) + Math.cos(location_rad_lat) * Math.cos(user_rad_lat) * Math.cos(rad_theta);
         if (dist > 1) { 
