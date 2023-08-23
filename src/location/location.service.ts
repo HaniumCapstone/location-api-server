@@ -1,13 +1,22 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LocationRepository } from './repository/location.repository';
 import { Location } from './entities/location.entity';
+import { CertVisitDto } from './dto/cert-visit.dto';
+import { Visit } from './entities/visit.entity';
+import { VisitRepository } from './repository/visit.repository';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class LocationService {
     constructor(
         @InjectRepository(LocationRepository)
         private locationRepository: LocationRepository,
+
+        @InjectRepository(VisitRepository)
+        private visitRepository: VisitRepository,
+
+        private jwtService: JwtService
     ) {}
 
     async getAllLocation(): Promise<Location[]> {
@@ -23,4 +32,54 @@ export class LocationService {
             
         return found;
     }
+
+    async getLocationByCharacter(character_id: number): Promise<Location[]> {
+        return await this.locationRepository.find({where: {character_id}});
+    }
+
+    async certVisit(accessToken: string, certVisitDto: CertVisitDto): Promise<Visit> {
+        const token = accessToken.replace("Bearer ", "");
+        const decoded = this.jwtService.decode(token);
+
+        const uid = Number(decoded['uid']);
+
+        // 거리 계산
+        const {site_id, user_lon, user_lat} = certVisitDto;
+        const location = await this.locationRepository.findOne({where: {site_id}});
+        const {longitude, latitude} = location; 
+
+        const location_rad_lat: number = Math.PI * latitude / 180;
+        const user_rad_lat: number = Math.PI * user_lat / 180;
+        const theta: number = longitude - user_lon;
+        const rad_theta: number = Math.PI * theta / 180;
+        let dist: number = Math.sin(location_rad_lat) * Math.sin(user_rad_lat) + Math.cos(location_rad_lat) * Math.cos(user_rad_lat) * Math.cos(rad_theta);
+        if (dist > 1) { 
+            dist = 1;
+        }
+
+        dist = Math.acos(dist);
+        dist = dist * 180 / Math.PI;
+        dist = dist * 60 * 1.1515 * 1.609344 * 1000;
+        if (dist < 100) {
+            dist = Math.round(dist / 10) * 10;
+        } else {
+            dist = Math.round(dist / 100) * 100;
+        }
+
+        if (dist > 500) {
+              throw new BadRequestException(`The user is more than 500 meters away.`);
+        }
+
+        return this.visitRepository.certVisit(uid, certVisitDto);
+    }
+
+    async getVisit(accessToken: string): Promise<Visit[]> {
+        const token = accessToken.replace("Bearer ", "");
+        const decoded = this.jwtService.decode(token);
+
+        const uid = Number(decoded['uid']);
+
+        return await this.visitRepository.find({where: {uid}});
+    }
+
 }
